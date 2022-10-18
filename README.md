@@ -49,9 +49,9 @@ class PostType < GraphQL::Schema::Object
   field :published, Boolean, null: false, deprecation_reason: 'Use isPublished instead'
 
   field :subposts, PostType, null: true do
-    argument :filter, types.String, required: false
-    argument :id, types.ID, required: false
-    argument :isPublished, types.Boolean, required: false
+    argument :filter, GraphQL::Types::String, required: false
+    argument :id, GraphQL::Types::ID, required: false
+    argument :isPublished, GraphQL::Types::Boolean, required: false
   end
 end
 ```
