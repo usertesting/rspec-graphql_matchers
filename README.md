@@ -38,10 +38,10 @@ Given a GraphQL object defined as
 
 ```ruby
 class PostType < GraphQL::Schema::Object
+  include GraphQL::Types::Relay::HasNodeField
+
   graphql_name "Post"
   description "A blog post"
-
-  implements GraphQL::Relay::Node.interface
 
   field :id, ID, null: false
   field :comments, [String], null: false
