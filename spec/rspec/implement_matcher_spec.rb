@@ -5,13 +5,10 @@ require 'spec_helper'
 module RSpec
   module GraphqlMatchers
     describe 'expect(a_type).to implement(interface_names)' do
-      AnInterface = GraphQL::InterfaceType.define do
-        name 'AnInterface'
-      end
-
-      AnotherInterface = GraphQL::InterfaceType.define do
-        name 'AnotherInterface'
-      end
+      AnotherInterface = Module.new {
+        include GraphQL::Schema::Interface
+        graphql_name 'AnotherInterface'
+      }
 
       a_class_based_interface = Module.new do
         include GraphQL::Schema::Interface
@@ -20,16 +17,12 @@ module RSpec
 
       RSpec.shared_examples 'implements interfaces' do
         it { is_expected.to implement('Node') }
-        it { is_expected.to implement('AnInterface') }
         it { is_expected.to implement('AClassBasedApiInterface') }
-        it { is_expected.to implement('Node', 'AnInterface', 'AClassBasedApiInterface') }
+        it { is_expected.to implement('Node', 'AClassBasedApiInterface') }
         it { is_expected.to implement(['Node']) }
-        it { is_expected.to implement(['AnInterface']) }
-        it { is_expected.to implement(%w[Node AnInterface]) }
-        it { is_expected.to implement(GraphQL::Relay::Node.interface, AnInterface) }
-        it do
-          is_expected.to implement([GraphQL::Relay::Node.interface, AnInterface])
-        end
+        it { is_expected.to implement(%w[Node]) }
+        it { is_expected.to implement(GraphQL::Relay::Node.interface) }
+        it { is_expected.to implement([GraphQL::Relay::Node.interface]) }
 
         it { is_expected.not_to implement('AnotherInterface') }
         it { is_expected.not_to implement(['AnotherInterface']) }
@@ -40,15 +33,15 @@ module RSpec
           expect { expect(a_type).to implement('AnotherInterface') }
             .to fail_with(
               "expected interfaces: AnotherInterface\n" \
-              'actual interfaces:   Node, AnInterface, AClassBasedApiInterface'
+              'actual interfaces:   Node, AClassBasedApiInterface'
             )
         end
 
         it 'provides a description' do
-          matcher = implement('Node, AnInterface')
+          matcher = implement('Node')
           matcher.matches?(a_type)
 
-          expect(matcher.description).to eq('implement Node, AnInterface')
+          expect(matcher.description).to eq('implement Node')
         end
 
         context 'when an invalid type is passed' do
@@ -65,28 +58,12 @@ module RSpec
         end
       end
 
-      context 'the type is defined with the legacy `#define` api' do
-        subject(:a_type) do
-          GraphQL::ObjectType.define do
-            name 'TestObject'
-            interfaces [
-              GraphQL::Relay::Node.interface,
-              AnInterface,
-              a_class_based_interface
-            ]
-          end
-        end
-
-        include_examples 'implements interfaces'
-      end
-
       context 'the type is defined with the class-based api' do
         subject(:a_type) do
           Class.new(GraphQL::Schema::Object) do
             graphql_name 'TestObject'
 
             implements GraphQL::Relay::Node.interface
-            implements AnInterface
             implements a_class_based_interface
           end
         end
