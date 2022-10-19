@@ -49,9 +49,9 @@ class PostType < GraphQL::Schema::Object
   field :published, Boolean, null: false, deprecation_reason: 'Use isPublished instead'
 
   field :subposts, PostType, null: true do
-    argument :filter, GraphQL::Types::String, required: false
-    argument :id, GraphQL::Types::ID, required: false
-    argument :isPublished, GraphQL::Types::Boolean, required: false
+    argument :filter, String, required: false
+    argument :id, ID, required: false
+    argument :isPublished, Boolean, required: false
   end
 end
 ```
@@ -97,27 +97,7 @@ describe PostType do
 end
 ```
 
-### 3) For objects defined using the legacy `#define` api, you can also use `with_property`, `with_hash_key` and `with_metadata`:
-
-```ruby
-PostTypeWithDefineApi = GraphQL::ObjectType.define do
-  name "DefinedPost"
-
-  interfaces [GraphQL::Relay::Node.interface]
-
-  field :id, !types.ID, property: :post_id
-  field :comments, !types[types.String], hash_key: :post_comments
-  field :isPublished, admin_only: true
-end
-
-describe PostTypeWithDefineApi do
-  it { is_expected.to have_a_field(:id).of_type('ID!').with_property(:post_id) }
-  it { is_expected.to have_a_field(:comments).with_hash_key(:post_comments) }
-  it { is_expected.to have_a_field(:isPublished).with_metadata(admin_only: true) }
-end
-```
-
-### 4) Test the arguments accepted by a field with `accept_argument` matcher:
+### 3) Test the arguments accepted by a field with `accept_argument` matcher:
 
 ```ruby
 describe PostType do
@@ -138,7 +118,7 @@ describe PostType do
 end
 ```
 
-### 5) Test an object's interface implementations:
+### 4) Test an object's interface implementations:
 
 ```ruby
 describe PostType do
@@ -154,7 +134,7 @@ describe PostType do
 end
 ```
 
-### 6) Using camelize: false on field names
+### 5) Using camelize: false on field names
 
 By default the graphql gem camelizes field names. This gem deals with it transparently:
 
