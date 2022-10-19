@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 describe 'expect(a_field).to be_of_type(graphql_type)' do
-  scalar_types = [types.Boolean, types.Int, types.Float, types.String, types.ID]
-  list_types   = scalar_types.map { |t| types[t] }
+  scalar_types = [GraphQL::Types::Boolean, GraphQL::Types::Int, GraphQL::Types::Float, GraphQL::Types::String, GraphQL::Types::ID]
+  list_types   = scalar_types.map { |t| t.to_list_type }
   all_types    = scalar_types + scalar_types.map(&:'!') + list_types.map(&:'!')
 
   all_types.each do |scalar_type|
