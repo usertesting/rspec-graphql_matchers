@@ -38,7 +38,7 @@ Given a GraphQL object defined as
 
 ```ruby
 class PostType < GraphQL::Schema::Object
-  include GraphQL::Types::Relay::HasNodeField
+  implements GraphQL::Types::Relay::Node
 
   graphql_name "Post"
   description "A blog post"
@@ -62,7 +62,7 @@ end
 describe PostType do
   subject { described_class }
 
-  it { is_expected.to have_field(:id).of_type(!types.ID) }
+  it { is_expected.to have_field(:id).of_type("ID!") }
   it { is_expected.to have_field(:comments).of_type("[String!]!") }
   it { is_expected.to have_field(:isPublished).of_type("Boolean") }
 
@@ -129,7 +129,7 @@ describe PostType do
   end
 
   # Accepts arguments as an array and type objects directly
-  it { is_expected.to implement(GraphQL::Relay::Node.interface) }
+  it { is_expected.to implement(GraphQL::Types::Relay::Node) }
   it { is_expected.not_to implement('OtherInterface') }
 end
 ```
@@ -142,7 +142,7 @@ By default the graphql gem camelizes field names. This gem deals with it transpa
 class ObjectMessingWithCamelsAndSnakesType < GraphQL::Schema::Object
   graphql_name 'ObjectMessingWithCamelsAndSnakes'
 
-  implements GraphQL::Relay::Node.interface
+  implements GraphQL::Types::Relay::Node
 
   field :me_gusta_los_camellos, ID, null: false
 
